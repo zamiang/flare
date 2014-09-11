@@ -1,5 +1,5 @@
-Backbone = require 'backbone'
 _ = require 'underscore'
+Backbone = require 'backbone'
 
 module.exports = class SmsView extends Backbone.View
 
@@ -12,12 +12,10 @@ module.exports = class SmsView extends Backbone.View
     'click button' : 'submit'
     "keyup input"  : 'submitOnEnter'
 
-  initialize: ->
+  initialize: (options) ->
     @$input = @$('input')
-    _.delay @focusInput, 1000
-
-  focusInput: =>
-    @$input.focus() unless @options.isTouchDevice
+    unless options.isTouchDevice
+      _.delay @$input.focus, 1000
 
   submit: ->
     @sending()

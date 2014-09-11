@@ -48,6 +48,7 @@
         "jquery": "2.1.0",
         "glob": "*",
         "knox": "*",
+        "benv": "*",
         "sqwish": "*",
         "uglify-js": "*",
         "portscanner": "*"

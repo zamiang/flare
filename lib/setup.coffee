@@ -3,7 +3,7 @@
 # such as overriding Backbone.sync and populating ./shared_data
 #
 
-{ NODE_ENV, PORT, ASSET_PATH, APPLICATION_NAME, SESSION_SECRET  } = config = require "../config"
+{ NODE_ENV, PORT, ASSET_PATH, APPLICATION_NAME, DEFAULT_CACHE_TIME, WORKS_NUM, ARTISTS_NUM, GALLERIES_NUM  } = config = require "../config"
 
 express = require 'express'
 sharify = require "sharify"
@@ -13,7 +13,6 @@ bodyParser = require 'body-parser'
 cookieParser = require 'cookie-parser'
 favicon = require 'serve-favicon'
 sd = require './shared_data'
-localsMiddleware = require './locals_middleware'
 logger = require 'morgan'
 { pageNotFound, internalError } = require '../components/error_handler'
 
@@ -22,6 +21,10 @@ sharify.data =
   JS_EXT: (if ("production" is NODE_ENV or "staging" is NODE_ENV) then ".min.js.cgz" else ".js")
   CSS_EXT: (if ("production" is NODE_ENV or "staging" is NODE_ENV) then ".min.css.cgz" else ".css")
   ASSET_PATH: ASSET_PATH
+  DEFAULT_CACHE_TIME: DEFAULT_CACHE_TIME
+  WORKS_NUM: WORKS_NUM
+  ARTISTS_NUM: ARTISTS_NUM
+  GALLERIES_NUM: GALLERIES_NUM
 
 module.exports = (app) ->
 
@@ -29,7 +32,6 @@ module.exports = (app) ->
   app.use bodyParser.json()
   app.use bodyParser.urlencoded(extended: true)
   app.use cookieParser()
-  app.use localsMiddleware
 
   # Inject sharify data before anything
   app.use sharify

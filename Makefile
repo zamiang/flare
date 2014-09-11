@@ -16,42 +16,41 @@ CDN_DOMAIN_staging = d346buv1lzfvg9
 s:
 	$(BIN)/coffee index.coffee
 
-# Run all of the project-level tests, followed by app-level tests
-test: assets-fast
+# Run all of the tests
+test: assets
 	$(BIN)/mocha $(shell find test -name '*.coffee' -not -path 'test/helpers/*')
 	$(BIN)/mocha $(shell find apps/*/test -name '*.coffee' -not -path 'test/helpers/*')
 
-# Generate minified assets from the /assets folder and output it to /public.
-assets:
-	$(foreach file, $(shell find assets -name '*.coffee' | cut -d '.' -f 1), \
-		$(BIN)/browserify $(file).coffee -t jadeify -t caching-coffeeify -u config.coffee > public/$(file).js; \
-		$(BIN)/uglifyjs public/$(file).js > public/$(file).min.js; \
-		gzip -f public/$(file).min.js; \
-		mv public/$(file).min.js.gz public/$(file).min.js.cgz; \
-	)
-	$(BIN)/stylus assets -o public/assets --inline --include public/
-	$(foreach file, $(shell find assets -name '*.styl' | cut -d '.' -f 1), \
-		$(BIN)/sqwish public/$(file).css -o public/$(file).min.css; \
-		gzip -f public/$(file).min.css; \
-		mv public/$(file).min.css.gz public/$(file).min.css.cgz; \
-	)
+public/assets:
+	mkdir -p $@
 
+# Quickly compile assets to public/assets for development
+assets: public/assets
+	$(BIN)/stylus assets/all.styl -o public/assets
+	$(BIN)/browserify assets/all.coffee -t caching-coffeeify -t jadeify > public/assets/all.js
 
-# Generate unminified assets for testing and development.
-assets-fast:
-	$(foreach file, $(shell find assets -name '*.coffee' | cut -d '.' -f 1), \
-		$(BIN)/browserify --fast $(file).coffee -t jadeify -t caching-coffeeify -u config.coffee > public/$(file).js; \
-	)
-	$(BIN)/stylus assets -o public/assets
+# Compiles assets for production (minifying, embeddeding, gzipping)
+assets-production: assets
+	$(BIN)/sqwish public/assets/all.css -o public/assets/all.min.css
+	$(BIN)/coffee lib/assets/embed_datauri.coffee public/assets/all.min.css
+	$(BIN)/uglifyjs public/assets/all.js > public/assets/all.min.js
+	gzip -f public/assets/all.min.js public/assets/all.min.css
+	rm public/assets/*.js public/assets/*.css
+
+# Uploads assets to S3
+assets-to-cdn: assets-production
+	$(BIN)/coffee lib/assets/to_cdn.coffee public/assets
 
 # Runs all the necessary build tasks to push to staging or production
-# Run with `make deploy env=staging` or `make deploy env=production`.
-deploy: assets
-	$(BIN)/bucketassets -d public/assets -b flare-$(env)
-	$(BIN)/bucketassets -d public/images -b flare-$(env)
-	heroku config:add \
-	ASSET_PATH=//$(CDN_DOMAIN_$(env)).cloudfront.net/assets/$(shell git rev-parse --short HEAD)/ \
-	--app=flare-$(env)
-	git push git@heroku.com:flare-$(env).git master
+deploy: assets-production
+	APPLICATION_NAME=flare-$(env) make assets-to-cdn
+	heroku config:add CDN_URL=//$(CDN_DOMAIN_$(env)).cloudfront.net/assets/$(shell git rev-parse --short HEAD)/ --app=flare-$(env)
+	git push -f git@heroku.com:flare-$(env).git master
+
+deploy-staging:
+	make deploy env=staging
+
+deploy-production:
+	make deploy env=production
 
 .PHONY: test

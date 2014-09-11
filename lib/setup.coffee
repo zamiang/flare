@@ -53,7 +53,7 @@ module.exports = (app) ->
   app.use require '../apps/home'
 
   # More general middleware
-  app.use favicon(path.resolve __dirname, '../public/images/favicon.ico')
+  app.use favicon(path.resolve __dirname, '../public/assets/favicon.ico')
   app.use express.static(path.resolve __dirname, "../public")
   app.use pageNotFound
   app.use internalError

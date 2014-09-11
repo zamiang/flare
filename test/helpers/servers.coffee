@@ -3,8 +3,8 @@
 # Useful for integration tests.
 #
 
-express = require 'express'
 spawn = require('child_process').spawn
+express = require 'express'
 
 # Convenience to start the test app server on 5000.
 @startServer = (callback) =>

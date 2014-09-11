@@ -17,7 +17,7 @@ html( class=htmlClass )
     meta( name='viewport', content="width=device-width,maximum-scale=1.0,user-scalable=no" )
     link( type='text/css', rel='stylesheet', href=(sd.ASSET_PATH + 'all' + sd.CSS_EXT) )
     link( rel='icon', type='image/x-icon', href=(sd.ASSET_PATH + 'favicon.ico' ) )
-    if sd.NODE_ENV != 'test'
+    if sd.NODE_ENV != 'test' && sd.BROWSER && sd.BROWSER.family != 'PhantomJS'
       //- Mixpanel & Google analytics script
       include ./google_analytics.html
       include ./mixpanel.html

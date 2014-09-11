@@ -14,6 +14,8 @@ cookieParser = require 'cookie-parser'
 favicon = require 'serve-favicon'
 sd = require './shared_data'
 logger = require 'morgan'
+unsupportedBrowserCheck = require "./unsupported_browser"
+
 { pageNotFound, internalError } = require '../components/error_handler'
 
 # Setup sharify constants & require dependencies that use sharify data
@@ -48,6 +50,7 @@ module.exports = (app) ->
   app.use cookieParser()
 
   app.use logger('dev')
+  app.use unsupportedBrowserCheck
 
   # Mount apps
   app.use require '../apps/home'

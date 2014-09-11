@@ -28,11 +28,6 @@ sharify.data =
 
 module.exports = (app) ->
 
-  # General settings
-  app.use bodyParser.json()
-  app.use bodyParser.urlencoded(extended: true)
-  app.use cookieParser()
-
   # Inject sharify data before anything
   app.use sharify
 
@@ -47,20 +42,18 @@ module.exports = (app) ->
       src: path.resolve(__dirname, "../")
       transforms: [require("jadeify"), require('caching-coffeeify')]
 
-  # Production settings
-  if app.get('env') is 'production' or app.get('env') is 'staging'
-    sd.JS_EXT = '.min.js.gz'
-    sd.CSS_EXT = '.min.css.gz'
+  # General settings
+  app.use bodyParser.json()
+  app.use bodyParser.urlencoded(extended: true)
+  app.use cookieParser()
 
   app.use logger('dev')
 
   # Mount apps
   app.use require '../apps/home'
 
+  # More general middleware
   app.use favicon(path.resolve __dirname, '../public/images/favicon.ico')
   app.use express.static(path.resolve __dirname, "../public")
-
-  # More general middleware
-  app.use express.static path.resolve __dirname, '../public'
   app.use pageNotFound
   app.use internalError

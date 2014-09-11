@@ -41,6 +41,7 @@
         "browserify-dev-middleware": "*",
         "caching-coffeeify": "*",
         "uglify-js": "*",
+        "jquery.poplockit": "*",
         "jadeify": "*",
         "jsdom": "*",
         "supertest": "*",

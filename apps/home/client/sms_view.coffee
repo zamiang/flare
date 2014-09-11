@@ -15,7 +15,10 @@ module.exports = class SmsView extends Backbone.View
   initialize: (options) ->
     @$input = @$('input')
     unless options.isTouchDevice
-      _.delay @$input.focus, 1000
+      _.delay @focusInput, 1000
+
+  focusInput: =>
+    @$input.focus()
 
   submit: ->
     @sending()

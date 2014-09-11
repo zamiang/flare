@@ -1,22 +1,20 @@
-servers = require '../../../test/helpers/servers'
+{ startServer, closeServer } = require '../../../test/helpers/servers'
 Browser = require 'zombie'
-sinon = require 'sinon'
 
 describe 'Home page', ->
 
-  before (done) ->
-    servers.setup -> done()
+  before (done) -> startServer done
 
-  after ->
-    servers.teardown()
+  after -> closeServer()
 
   it 'renders the promo page and lets you submit your phone number', (done) ->
-    Browser.visit 'http://localhost:5000', (e, browser) ->
-      $ = browser.window.$
-      browser.html().should.include 'The art world in your pocket'
-      sinon.stub $, 'ajax'
-      $('#sms input.phone_number').val('555 102 2432').submit()
-      $('#sms button').click()
-      $.ajax.args[0][0].url.should.include '/send_link'
-      $.ajax.args[0][0].data.phone_number.should.equal '555 102 2432'
-      done()
+    browser = new Browser
+    Browser.visit 'http://localhost:5000', ->
+      browser.wait ->
+        browser.html().should.containEql 'The art world in your pocket'
+        sinon.stub $, 'ajax'
+        $('#sms input.phone_number').val('555 102 2432').submit()
+        $('#sms button').click()
+        $.ajax.args[0][0].url.should.containEql '/send_link'
+        $.ajax.args[0][0].data.phone_number.should.equal '555 102 2432'
+        done()

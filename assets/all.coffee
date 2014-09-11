@@ -1,2 +1,4 @@
 require('backbone').$ = $
-require '../apps/home/client/index.coffee'
+$ ->
+  require('../components/layout/bootstrap.coffee')()
+  require('../apps/home/client/view.coffee').init()

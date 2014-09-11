@@ -17,7 +17,7 @@ html( class=htmlClass )
     meta( name='viewport', content="width=device-width,maximum-scale=1.0,user-scalable=no" )
     link( type='text/css', rel='stylesheet', href=(sd.ASSET_PATH + 'all' + sd.CSS_EXT) )
     link( rel='icon', type='image/x-icon', href=(sd.ASSET_PATH + 'favicon.ico' ) )
-    if sd.NODE_ENV != 'test' && sd.BROWSER && sd.BROWSER.family != 'PhantomJS'
+    if sd.NODE_ENV != 'test'
       //- Mixpanel & Google analytics script
       include ./google_analytics.html
       include ./mixpanel.html
@@ -33,11 +33,4 @@ html( class=htmlClass )
     block head
   body
     block body
-
-    #scripts
-      script( src=(sd.ASSET_PATH + 'all' + sd.JS_EXT) )
-
-      script.
-        window.BOOTSTRAP = !{JSON.stringify(bootstrapData)};
-
-      block scripts
+    script( src=(sd.ASSET_PATH + 'all' + sd.JS_EXT) )
